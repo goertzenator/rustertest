@@ -1,0 +1,12 @@
+[package]
+
+name = "rustertest"
+version = "0.0.1"
+authors = ["Daniel Goertzen <daniel.goertzen@gmail.com>"]
+
+#[lib]
+#crate-type = ["dylib"]
+
+
+[dependencies.ruster]
+path = "../ruster"
