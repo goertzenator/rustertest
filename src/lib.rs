@@ -77,29 +77,66 @@ pub extern "C" fn native_add(env: *mut ErlNifEnv,
 // };
 
 
-static FUNCS: [ErlNifFunc; 1] = [
-    ErlNifFunc{ name:     "native_add\0",
+//const FUNCS: [ErlNifFunc; 1] = [
+const FUNCS: [ErlNifFunc] = &[
+    ErlNifFunc{ name:     &b"native_add\0"[0],
                 arity:    2,
                 function: native_add,
                 flags:    0,
-              }
+              },
+    // ErlNifFunc{ name:     &"native_add\0".as_bytes()[0],
+    //             arity:    2,
+    //             function: native_add,
+    //             flags:    0,
+    //           },
 ];
+
+// static SARRAY: [i32; 1] = [11];
+
+// struct MyStruct {
+//     pub arr: *const [i32],
+// }
+// unsafe impl Sync for MyStruct {}
+
+// static mystruct: MyStruct = MyStruct {
+//     arr: &SARRAY
+// };
+
+
+const ENTRY: ErlNifEntry = ErlNifEntry{
+        major : NIF_MAJOR_VERSION,
+        minor : NIF_MINOR_VERSION,
+        name : &b"rustnif\0"[0],
+        num_of_funcs : 2,
+        funcs : &FUNCS[0],
+        load :    None,
+        reload :  None,
+        upgrade : None,
+        unload :  None,
+        vm_variant : &b"beam.vanilla\0"[0],
+        options: 0,
+    };
 
 #[no_mangle]
 pub extern "C" fn nif_init() -> *const ErlNifEntry {
-	static ENTRY: ErlNifEntry = ErlNifEntry{
-		major : NIF_MAJOR_VERSION,
-		minor : NIF_MINOR_VERSION,
-		name : "rustnif\0",
-		num_of_funcs : 1,
-		funcs : &FUNCS,
-		load :    None,
-		reload :  None,
-		upgrade : None,
-		unload :  None,
-		vm_variant : "beam.vanilla\0",
-        options: 0,
-	};
-
     &ENTRY
+}
+
+
+use std::mem::size_of_val;
+
+#[no_mangle]
+pub extern "C" fn info() {
+    println!("major {}",        size_of_val(&ENTRY.major));
+    println!("minor {}",        size_of_val(&ENTRY.minor));
+    println!("name {}",         size_of_val(&ENTRY.name));
+    println!("num_of_funcs {}", size_of_val(&ENTRY.num_of_funcs));
+    println!("funcs {}",        size_of_val(&ENTRY.funcs));
+    println!("load {}",         size_of_val(&ENTRY.load));
+    println!("reload {}",       size_of_val(&ENTRY.reload));
+    println!("upgrade {}",      size_of_val(&ENTRY.upgrade));
+    println!("unload {}",       size_of_val(&ENTRY.unload));
+    println!("vm_variant {}",   size_of_val(&ENTRY.vm_variant));
+    println!("options {}",      size_of_val(&ENTRY.options));
+
 }
