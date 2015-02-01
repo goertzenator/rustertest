@@ -6,7 +6,8 @@ authors = ["Daniel Goertzen <daniel.goertzen@gmail.com>"]
 
 [lib]
 name = "rustertest"
-crate-type = ["dylib"]
+#crate-type = ["dylib"]
+crate-type = ["staticlib"]
 
 
 [dependencies.ruster]
