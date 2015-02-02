@@ -2,37 +2,48 @@ extern crate ruster;
 extern crate core;
 
 use ruster::raw::*;
-
-use core::marker::Sync;
-
-// #[no_mangle]
-// pub extern "C" fn native_add() -> ERL_NIF_TERM
-// {
-//     //let x = unsafe {enif_make_badarg(env)};
- 
-//     let x:c_int = 0; //ERL_NIF_TERM(0);
-//     x 
-
-// }
+use ruster::rnif::*;
+use std::mem::transmute;
 
 #[no_mangle]
 pub extern "C" fn native_add(env: *mut ErlNifEnv,
-                             argc: c_int,
-                             args: *const ERL_NIF_TERM) -> ERL_NIF_TERM
+                          argc: c_int,
+                          args: *const ERL_NIF_TERM) -> ERL_NIF_TERM
 {
-
-    if argc != 2
-        { unsafe { return enif_make_badarg(env); } }
-    let mut a: c_int = 0;
-    let mut b: c_int = 0;
     unsafe {
-        if enif_get_int(env, *args.offset(0), &mut a) == 0
-            { return enif_make_badarg(env); }
-        if enif_get_int(env, *args.offset(1), &mut b) == 0
-            { return enif_make_badarg(env); }
-        enif_make_int(env, a + b + 10)
+         transmute(native_add_wrapped(&*env, std::slice::from_raw_buf(transmute(&args), argc as usize)))
     }
 }
+
+
+//fn native_add_wrapped(env: & Environment, args: &[Term]) -> Term
+fn native_add_wrapped<'a>(env: &'a Environment, args: &[Term<'a>]) -> Term<'a>
+{
+    make_int(env, 123)
+}
+
+
+// #[no_mangle]
+// pub extern "C" fn native_add(env: *mut ErlNifEnv,
+//                              argc: c_int,
+//                              args: *const ERL_NIF_TERM) -> ERL_NIF_TERM
+// {
+
+//     if argc != 2
+//         { unsafe { return enif_make_badarg(env); } }
+//     let mut a: c_int = 0;
+//     let mut b: c_int = 0;
+//     unsafe {
+//         if enif_get_int(env, *args.offset(0), &mut a) == 0
+//             { return enif_make_badarg(env); }
+//         if enif_get_int(env, *args.offset(1), &mut b) == 0
+//             { return enif_make_badarg(env); }
+//         enif_make_int(env, a + b + 10)
+//     }
+// }
+
+
+
 
 
 
