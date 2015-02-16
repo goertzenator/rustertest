@@ -15,8 +15,8 @@ dumpentry: dumpentry.o
 .PHONY: librustertest.a
 librustertest.a:
 	rm -f $@
-	cargo build
-	ln -s target/librustertest*.a $@
+	cargo build --release
+	ln -s target/release/librustertest*.a $@
 
 rustertest.o: rustertest.c env.mk
 	$(CC) -c $(CFLAGS) -o $@ $<

@@ -1,27 +1,40 @@
+#[macro_use]
 extern crate ruster;
 extern crate core;
 
-use ruster::raw::*;
-use ruster::rnif::*;
+use ruster::l1::*;
+use ruster::l2::*;
 use std::mem::transmute;
 
-#[no_mangle]
-pub extern "C" fn native_add(env: *mut ErlNifEnv,
-                          argc: c_int,
-                          args: *const ERL_NIF_TERM) -> ERL_NIF_TERM
-{
-    unsafe {
-         transmute(native_add_wrapped(&*env, std::slice::from_raw_buf(transmute(&args), argc as usize)))
-    }
-}
+
+// #[no_mangle]
+// pub extern "C" fn native_add(env: *mut ErlNifEnv,
+//                           argc: c_int,
+//                           args: *const ERL_NIF_TERM) -> ERL_NIF_TERM
+// {
+//     unsafe {
+//          match native_add_wrapped(&*env, std::slice::from_raw_buf(transmute(&args), argc as usize)) {
+//             Ok(x) => transmute(x),
+//             _ => enif_make_badarg(env),
+//          }
+//     }
+// }
 
 
 //fn native_add_wrapped(env: & Environment, args: &[Term]) -> Term
-fn native_add_wrapped<'a>(env: &'a Environment, args: &[Term<'a>]) -> Term<'a>
+fn native_add_wrapped<'a>(env: &'a Environment, args: &[Term<'a>]) -> Result<Term<'a>, NifError>
 {
-    make_int(env, 123)
+    let x:u64 = try!(Decodable::from_term(env, args[0]));
+    let y:u64 = try!(Decodable::from_term(env, args[1]));
+    Ok( (x+y+1).to_term(env))
 }
 
+
+
+/// L1 native_add implementation
+
+//wrap_l2_nif!(native_add);
+wrap_l2_nif!(native_add, native_add_wrapped);
 
 // #[no_mangle]
 // pub extern "C" fn native_add(env: *mut ErlNifEnv,
